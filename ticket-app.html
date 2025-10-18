@@ -1,0 +1,107 @@
+</div>
+        
+        <div class="input-section">
+            <label class="input-label">Код в формате:</label>
+            <input 
+                type="text" 
+                class="code-input" 
+                id="codeInput" 
+                placeholder="002168"
+                maxlength="6"
+                inputmode="numeric"
+                pattern="[0-9]*"
+            >
+            <div class="example">номер маршрута + номер автобуса (например 002168)</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Городской Транспорт:</div>
+            <div class="option" onclick="selectOption(this)">Городской Транспорт</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Способ покупки:</div>
+            <div class="option" onclick="selectOption(this)">Купить билет</div>
+        </div>
+        
+        <button class="buy-button" id="buyButton" onclick="processPurchase()" disabled>
+            Купить билет
+        </button>
+        
+        <div class="ticket-preview" id="ticketPreview">
+            <div class="ticket-line"><span class="ticket-emoji">✅</span> Билет куплен успешно.</div>
+            <div class="ticket-line">ООО "СКАД"</div>
+            <div class="ticket-line"><span class="ticket-emoji">🚏</span> 90 Ак. биатлона-Верхн. Базаиха</div>
+            <div class="ticket-line"><span class="ticket-emoji">🚌</span> м430та124</div>
+            <div class="ticket-line"><span class="ticket-emoji">🪙</span> Тариф: Полный 48,00 ₽</div>
+            <div class="ticket-line"><span class="ticket-emoji">🎫</span> Билет № 1 248 585 367</div>
+            <div class="ticket-line"><span class="ticket-emoji">🕑</span> Действует до 21:12</div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        
+        // Инициализация Telegram Web App
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        let selectedOptions = 0;
+        
+        function selectOption(element) {
+            if (!element.classList.contains('selected')) {
+                element.classList.add('selected');
+                selectedOptions++;
+            }
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const code = document.getElementById('codeInput').value;
+            const buyButton = document.getElementById('buyButton');
+            
+            if (code.length === 6 && selectedOptions === 2) {
+                buyButton.disabled = false;
+            } else {
+                buyButton.disabled = true;
+            }
+        }
+        
+        function processPurchase() {
+            const code = document.getElementById('codeInput').value;
+            const ticketPreview = document.getElementById('ticketPreview');
+            
+            // Показываем превью билета
+            ticketPreview.style.display = 'block';
+            
+            // Прокручиваем к билету
+            ticketPreview.scrollIntoView({ behavior: 'smooth' });
+            
+            // Отправляем данные в бота через 2 секунды
+            setTimeout(() => {
+                const data = {
+                    code: code,
+                    action: 'buy_ticket',
+                    timestamp: new Date().toISOString()
+                };
+                
+                tg.sendData(JSON.stringify(data));
+            }, 2000);
+        }
+        
+        // Проверка валидности формы при вводе кода
+        document.getElementById('codeInput').addEventListener('input', function(e) {
+            // Разрешаем только цифры
+            this.value = this.value.replace(/\D/g, '');
+            checkFormValidity();
+        });
+        
+        // Обработка нажатия Enter
+        document.getElementById('codeInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkFormValidity();
+            }
+        });
+    </script>
+</body>
+</html>
