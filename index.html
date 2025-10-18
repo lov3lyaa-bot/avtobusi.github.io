@@ -1,4 +1,167 @@
-</div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Покупка билета</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .container {
+            background: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .code-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .example {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #f0f0f0;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .bus-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bus-button {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bus-button.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .buy-button {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .buy-button:active {
+            transform: scale(0.98);
+        }
+        
+        .buy-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .selected-bus {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: 500;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎫 Покупка билета</h1>
+        </div>
         
         <div class="input-section">
             <label class="input-label">Код в формате:</label>
@@ -15,6 +178,19 @@
         </div>
         
         <div class="section">
+            <div class="section-title">Выберите автобус:</div>
+            <div class="bus-buttons" id="busButtons">
+                <div class="bus-button" onclick="selectBus(this, 'м430та124')">м430та124</div>
+                <div class="bus-button" onclick="selectBus(this, 'м431та125')">м431та125</div>
+                <div class="bus-button" onclick="selectBus(this, 'м432та126')">м432та126</div>
+                <div class="bus-button" onclick="selectBus(this, 'м433та127')">м433та127</div>
+                <div class="bus-button" onclick="selectBus(this, 'м434та128')">м434та128</div>
+                <div class="bus-button" onclick="selectBus(this, 'м435та129')">м435та129</div>
+            </div>
+            <div class="selected-bus" id="selectedBusDisplay">Автобус не выбран</div>
+        </div>
+        
+        <div class="section">
             <div class="section-title">Городской Транспорт:</div>
             <div class="option" onclick="selectOption(this)">Городской Транспорт</div>
         </div>
@@ -27,16 +203,6 @@
         <button class="buy-button" id="buyButton" onclick="processPurchase()" disabled>
             Купить билет
         </button>
-        
-        <div class="ticket-preview" id="ticketPreview">
-            <div class="ticket-line"><span class="ticket-emoji">✅</span> Билет куплен успешно.</div>
-            <div class="ticket-line">ООО "СКАД"</div>
-            <div class="ticket-line"><span class="ticket-emoji">🚏</span> 90 Ак. биатлона-Верхн. Базаиха</div>
-            <div class="ticket-line"><span class="ticket-emoji">🚌</span> м430та124</div>
-            <div class="ticket-line"><span class="ticket-emoji">🪙</span> Тариф: Полный 48,00 ₽</div>
-            <div class="ticket-line"><span class="ticket-emoji">🎫</span> Билет № 1 248 585 367</div>
-            <div class="ticket-line"><span class="ticket-emoji">🕑</span> Действует до 21:12</div>
-        </div>
     </div>
 
     <script>
@@ -47,6 +213,23 @@
         tg.enableClosingConfirmation();
         
         let selectedOptions = 0;
+        let selectedBus = null;
+        
+        function selectBus(element, busNumber) {
+            // Снимаем выделение со всех кнопок автобусов
+            document.querySelectorAll('.bus-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Выделяем выбранную кнопку
+            element.classList.add('selected');
+            selectedBus = busNumber;
+            
+            // Показываем выбранный автобус
+            document.getElementById('selectedBusDisplay').textContent = `Выбран автобус: ${busNumber}`;
+            
+            checkFormValidity();
+        }
         
         function selectOption(element) {
             if (!element.classList.contains('selected')) {
@@ -60,7 +243,7 @@
             const code = document.getElementById('codeInput').value;
             const buyButton = document.getElementById('buyButton');
             
-            if (code.length === 6 && selectedOptions === 2) {
+            if (code.length === 6 && selectedOptions === 2 && selectedBus !== null) {
                 buyButton.disabled = false;
             } else {
                 buyButton.disabled = true;
@@ -69,24 +252,18 @@
         
         function processPurchase() {
             const code = document.getElementById('codeInput').value;
-            const ticketPreview = document.getElementById('ticketPreview');
             
-            // Показываем превью билета
-            ticketPreview.style.display = 'block';
+            // Отправляем данные в бота
+            const data = {
+                code: code,
+                bus_number: selectedBus,
+                route: "90 Ак. биатлона-Верхн. Базаиха",
+                action: 'buy_ticket',
+                timestamp: new Date().toISOString()
+            };
             
-            // Прокручиваем к билету
-            ticketPreview.scrollIntoView({ behavior: 'smooth' });
-            
-            // Отправляем данные в бота через 2 секунды
-            setTimeout(() => {
-                const data = {
-                    code: code,
-                    action: 'buy_ticket',
-                    timestamp: new Date().toISOString()
-                };
-                
-                tg.sendData(JSON.stringify(data));
-            }, 2000);
+            tg.sendData(JSON.stringify(data));
+            tg.close();
         }
         
         // Проверка валидности формы при вводе кода
