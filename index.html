@@ -2,167 +2,131 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Городской Транспорт — Ввод кода</title>
-  <style>
-    :root{
-      --bg:#0e1620; --panel:#122029; --accent:#f5f7f9; --muted:#98a6b2;
-      --kbd-bg:#e9eef2; --kbd-key:#ffffff; --kbd-border:#c7d2d9;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-    body{margin:0;background:linear-gradient(180deg,#0b1318,#0e1620);color:var(--accent);display:flex;align-items:center;justify-content:center;height:100vh}
-    .card{width:360px;padding:20px;border-radius:8px;background:var(--panel);box-shadow:0 6px 18px rgba(0,0,0,.6)}
-    .title{font-size:20px;margin-bottom:18px}
-    .cells{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
-    .cell{width:36px;height:48px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px}
-    .hint{display:flex;align-items:center;gap:8px;color:var(--muted);margin-bottom:12px}
-    .kbd{background:var(--kbd-bg);padding:12px;border-radius:8px}
-    .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .key{background:var(--kbd-key);border:1px solid var(--kbd-border);height:56px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#111;cursor:pointer;user-select:none}
-    .key:active{transform:translateY(1px)}
-    .key.wide{grid-column:span 2}
-    .footer{margin-top:12px;text-align:center;color:var(--muted);font-size:13px}
-    video{max-width:100%;border-radius:8px;margin-top:10px;display:none}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Городской Транспорт</title>
+<style>
+  /* Цвета близкие к фото */
+  :root{
+    --bg:#0f1b23;
+    --panel:#0f222a;
+    --box:#132328;
+    --muted:#9fb0bb;
+    --accent:#e6eef2;
+    --key-bg:#ffffff;
+    --key-border:#d6d9dd;
+  }
+  html,body{height:100%;margin:0;font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--accent)}
+  .wrap{max-width:360px;margin:0 auto;padding:12px 14px;box-sizing:border-box}
+  .topbar{height:52px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,0.03);font-weight:600}
+  .title{padding-left:6px}
+  .content{padding-top:18px}
+  .cells{display:flex;gap:10px;justify-content:center;margin-bottom:18px}
+  .cell{
+    width:44px;height:48px;border-radius:6px;background:transparent;border:2px solid rgba(255,255,255,0.04);
+    box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent)
+  }
+  .hint{display:flex;align-items:center;gap:10px;padding:6px 8px;color:var(--muted);font-weight:600;margin-bottom:12px}
+  .hint svg{width:18px;height:18px;opacity:0.9}
+  .kbd{background:transparent;border-radius:6px;padding:6px}
+  .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .key{
+    height:64px;border-radius:6px;background:var(--key-bg);display:flex;align-items:center;justify-content:center;
+    font-size:22px;color:#111;border:1px solid var(--key-border);cursor:pointer;user-select:none;
+  }
+  .key.smalltext{font-size:12px;padding:6px}
+  .key.action{background:linear-gradient(#fff,#f2f2f2)}
+  .row-bottom{margin-top:12px;text-align:center;color:var(--muted);font-size:12px}
+  .send-icon{display:flex;align-items:center;justify-content:center}
+  /* responsive */
+  @media (max-width:420px){ .wrap{padding:10px} .cell{width:40px;height:44px} .key{height:60px} }
+</style>
 </head>
 <body>
-  <div class="card" role="application" aria-label="Ввод кода">
-    <div class="title">Городской Транспорт</div>
+  <div class="wrap" role="application" aria-label="Городской Транспорт">
+    <div class="topbar"><div class="title">Городской Транспорт</div></div>
 
-    <div class="cells" id="cells" aria-hidden="false">
-      <div class="cell" data-index="0"></div>
-      <div class="cell" data-index="1"></div>
-      <div class="cell" data-index="2"></div>
-      <div class="cell" data-index="3"></div>
-      <div class="cell" data-index="4"></div>
-      <div class="cell" data-index="5"></div>
-    </div>
-
-    <div class="hint">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 3h18v18H3z" fill="#98A6B2"/></svg>
-      <div>Введите код с наклейки</div>
-    </div>
-
-    <div class="kbd" id="kbd" role="group" aria-label="Цифровая клавиатура">
-      <div class="keys">
-        <div class="key" data-key="1">1</div>
-        <div class="key" data-key="2">2</div>
-        <div class="key" data-key="3">3</div>
-        <div class="key" data-key="4">4</div>
-        <div class="key" data-key="5">5</div>
-        <div class="key" data-key="6">6</div>
-        <div class="key" data-key="7">7</div>
-        <div class="key" data-key="8">8</div>
-        <div class="key" data-key="9">9</div>
-        <div class="key wide" id="scanBtn">Сканировать</div>
-        <div class="key" data-key="0">0</div>
-        <div class="key" id="sendBtn">✉️</div>
+    <div class="content">
+      <div class="cells" id="cells" aria-hidden="false">
+        <div class="cell" data-i="0"></div>
+        <div class="cell" data-i="1"></div>
+        <div class="cell" data-i="2"></div>
+        <div class="cell" data-i="3"></div>
+        <div class="cell" data-i="4"></div>
+        <div class="cell" data-i="5"></div>
       </div>
-      <video id="video" playsinline></video>
-    </div>
 
-    <div class="footer">@buspaybot</div>
+      <div class=&quot;hint" aria-hidden="false">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" fill="#98A6B2"/></svg>
+        <div>Введите код с наклейки</div>
+      </div>
+
+      <div class="kbd" aria-label="Клавиатура">
+        <div class="keys" id="keys">
+          <div class="key" data-key="1">1</div>
+          <div class="key" data-key="2">2</div>
+          <div class="key" data-key="3">3</div>
+          <div class="key" data-key="4">4</div>
+          <div class="key" data-key="5">5</div>
+          <div class="key" data-key="6">6</div>
+          <div class="key" data-key="7">7</div>
+          <div class="key" data-key="8">8</div>
+          <div class="key" data-key="9">9</div>
+
+          <div class="key action smalltext" id="scanBtn">
+            Сканировать
+            <div style="margin-left:6px;font-size:10px;opacity:0.7">▦▦</div>
+          </div>
+
+          <div class="key" data-key="0">0</div>
+
+          <div class="key action send-icon" id="delBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 19c0 .6.4 1 1 1h10a1 1 0 0 0 1-1V8H6v11zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="#111"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-bottom">@buspaybot</div>
+    </div>
   </div>
 
-  <script>
-    const MAX = 6
-    const cells = document.querySelectorAll('.cell')
-    let value = ''
-
-    function refresh(){
-      for(let i=0;i<MAX;i++){
-        cells[i].textContent = value[i] ? value[i] : ''
-      }
+<script>
+  // Логика ввода: 6 ячеек, ввод цифр, удаление последней, очистка по длинному клику
+  const cells = document.querySelectorAll('.cell')
+  let value = ''
+  const MAX = 6
+  function refresh(){
+    for(let i=0;i<MAX;i++){
+      cells[i].textContent = value[i]||''
     }
+  }
+  document.querySelectorAll('.key[data-key]').forEach(k=>{
+    k.addEventListener('click', ()=>{ if(value.length<MAX){ value += k.dataset.key; refresh() } })
+  })
+  document.getElementById('delBtn').addEventListener('click', ()=>{
+    // если пусто — ничего, если есть — удаляем последнюю
+    value = value.slice(0,-1); refresh()
+  })
+  // длинное нажатие для очистки
+  let holdTimer = null
+  const delBtn = document.getElementById('delBtn')
+  delBtn.addEventListener('mousedown', ()=>{ holdTimer = setTimeout(()=>{ value=''; refresh() }, 700) })
+  delBtn.addEventListener('mouseup', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null } })
+  delBtn.addEventListener('touchstart', ()=>{ holdTimer = setTimeout(()=>{ value=''; refresh() }, 700) }, {passive:true})
+  delBtn.addEventListener('touchend', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null } }, {passive:true})
 
-    document.querySelectorAll('.key[data-key]').forEach(k=>{
-      k.addEventListener('click', ()=>{
-        if(value.length < MAX){
-          value += k.dataset.key
-          refresh()
-        }
-      })
-    })
+  // кнопка сканирования — заглушка
+  document.getElementById('scanBtn').addEventListener('click', ()=>{
+    alert('Открыть сканер (реализация зависит от проекта).')
+  })
 
-    // отправка (замените на реальную отправку в бота через Web App or API)
-    document.getElementById('sendBtn').addEventListener('click', ()=>{
-      if(value.length !== MAX){
-        alert('Введите 6-значный код')
-        return
-      }
-      // пример: window.Telegram.WebApp.sendData(value)
-      console.log('Отправка кода:', value)
-      alert('Код отправлен: ' + value)
-      value = ''
-      refresh()
-    })
-
-    // сканер QR (использует WebRTC + jsQR если подключите библиотеку)
-    const video = document.getElementById('video')
-    const scanBtn = document.getElementById('scanBtn')
-    let stream=null, scanning=false, scanAnim=null
-
-    scanBtn.addEventListener('click', async ()=>{
-      if(!scanning){
-        try{
-          stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
-          video.srcObject = stream
-          await video.play()
-          video.style.display = 'block'
-          scanning = true
-          scanFrame()
-        }catch(e){
-          alert('Ошибка доступа к камере: ' + e.message)
-        }
-      }else{
-        stopScan()
-      }
-    })
-
-    function stopScan(){
-      if(stream){stream.getTracks().forEach(t=>t.stop()); stream=null}
-      video.pause(); video.style.display='none'; scanning=false
-      if(scanAnim) cancelAnimationFrame(scanAnim)
-    }
-
-    // простая заглушка сканирования: пытается прочитать числовые символы через canvas + встроенный jsQR не подключён
-    function scanFrame(){
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-      ctx.drawImage(video,0,0,canvas.width,canvas.height)
-      // Здесь можно подключить jsQR или другую библиотеку для распознавания QR и получить текст
-      // Пример (если подключите jsQR): const code = jsQR(ctx.getImageData(0,0,canvas.width,canvas.height).data, canvas.width, canvas.height)
-      // if(code){ handleScanned(code.data) }
-      scanAnim = requestAnimationFrame(scanFrame)
-    }
-
-    function handleScanned(text){
-      // если текст содержит 6 цифр подряд — заполняем
-      const m = text.match(/(\d{6})/)
-      if(m){
-        value = m[1]
-        refresh()
-        stopScan()
-        alert('Считан код: ' + value)
-      }else{
-        alert('QR не содержит 6-значного кода')
-      }
-    }
-
-    // поддержка удаления по долгому нажатию правой кнопки и клавиатуры
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Backspace'){
-        value = value.slice(0,-1)
-        refresh()
-      }
-      if(/\d/.test(e.key)){
-        if(value.length < MAX){ value += e.key; refresh() }
-      }
-    })
-  </script>
+  // поддержка клавиатуры
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Backspace'){ value = value.slice(0,-1); refresh(); return }
+    if(/^[0-9]$/.test(e.key)){ if(value.length<MAX){ value += e.key; refresh() } }
+    if(e.key === 'Enter'){ if(value.length===MAX){ alert('Отправлено: '+value); value=''; refresh() } }
+  })
+</script>
 </body>
 </html>
 
