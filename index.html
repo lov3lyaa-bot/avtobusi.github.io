@@ -1,284 +1,169 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Покупка билета</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 0;
-        }
-        
-        .container {
-            background: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-top: 20px;
-        }
-        
-        .header h1 {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        
-        .input-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .input-label {
-            display: block;
-            margin-bottom: 10px;
-            color: #333;
-            font-weight: 500;
-            font-size: 16px;
-        }
-        
-        .code-input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 18px;
-            text-align: center;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        }
-        
-        .example {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-        }
-        
-        .section {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            border: 2px solid #f0f0f0;
-        }
-        
-        .section-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 18px;
-        }
-        
-        .bus-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .bus-button {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .bus-button.selected {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .option {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .option.selected {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .buy-button {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .buy-button:active {
-            transform: scale(0.98);
-        }
-        
-        .buy-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .selected-bus {
-            text-align: center;
-            margin: 10px 0;
-            font-weight: 500;
-            color: #667eea;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Городской Транспорт — Ввод кода</title>
+  <style>
+    :root{
+      --bg:#0e1620; --panel:#122029; --accent:#f5f7f9; --muted:#98a6b2;
+      --kbd-bg:#e9eef2; --kbd-key:#ffffff; --kbd-border:#c7d2d9;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body{margin:0;background:linear-gradient(180deg,#0b1318,#0e1620);color:var(--accent);display:flex;align-items:center;justify-content:center;height:100vh}
+    .card{width:360px;padding:20px;border-radius:8px;background:var(--panel);box-shadow:0 6px 18px rgba(0,0,0,.6)}
+    .title{font-size:20px;margin-bottom:18px}
+    .cells{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
+    .cell{width:36px;height:48px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px}
+    .hint{display:flex;align-items:center;gap:8px;color:var(--muted);margin-bottom:12px}
+    .kbd{background:var(--kbd-bg);padding:12px;border-radius:8px}
+    .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .key{background:var(--kbd-key);border:1px solid var(--kbd-border);height:56px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#111;cursor:pointer;user-select:none}
+    .key:active{transform:translateY(1px)}
+    .key.wide{grid-column:span 2}
+    .footer{margin-top:12px;text-align:center;color:var(--muted);font-size:13px}
+    video{max-width:100%;border-radius:8px;margin-top:10px;display:none}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎫 Покупка билета</h1>
-        </div>
-        
-        <div class="input-section">
-            <label class="input-label">Код в формате:</label>
-            <input 
-                type="text" 
-                class="code-input" 
-                id="codeInput" 
-                placeholder="002168"
-                maxlength="6"
-                inputmode="numeric"
-                pattern="[0-9]*"
-            >
-            <div class="example">номер маршрута + номер автобуса (например 002168)</div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">Выберите автобус:</div>
-            <div class="bus-buttons" id="busButtons">
-                <div class="bus-button" onclick="selectBus(this, 'м430та124')">м430та124</div>
-                <div class="bus-button" onclick="selectBus(this, 'м431та125')">м431та125</div>
-                <div class="bus-button" onclick="selectBus(this, 'м432та126')">м432та126</div>
-                <div class="bus-button" onclick="selectBus(this, 'м433та127')">м433та127</div>
-                <div class="bus-button" onclick="selectBus(this, 'м434та128')">м434та128</div>
-                <div class="bus-button" onclick="selectBus(this, 'м435та129')">м435та129</div>
-            </div>
-            <div class="selected-bus" id="selectedBusDisplay">Автобус не выбран</div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">Городской Транспорт:</div>
-            <div class="option" onclick="selectOption(this)">Городской Транспорт</div>
-        </div>
-        
-        <div class="section">
-            <div class="section-title">Способ покупки:</div>
-            <div class="option" onclick="selectOption(this)">Купить билет</div>
-        </div>
-        
-        <button class="buy-button" id="buyButton" onclick="processPurchase()" disabled>
-            Купить билет
-        </button>
+  <div class="card" role="application" aria-label="Ввод кода">
+    <div class="title">Городской Транспорт</div>
+
+    <div class="cells" id="cells" aria-hidden="false">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        
-        // Инициализация Telegram Web App
-        tg.expand();
-        tg.enableClosingConfirmation();
-        
-        let selectedOptions = 0;
-        let selectedBus = null;
-        
-        function selectBus(element, busNumber) {
-            // Снимаем выделение со всех кнопок автобусов
-            document.querySelectorAll('.bus-button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            
-            // Выделяем выбранную кнопку
-            element.classList.add('selected');
-            selectedBus = busNumber;
-            
-            // Показываем выбранный автобус
-            document.getElementById('selectedBusDisplay').textContent = `Выбран автобус: ${busNumber}`;
-            
-            checkFormValidity();
+    <div class="hint">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 3h18v18H3z" fill="#98A6B2"/></svg>
+      <div>Введите код с наклейки</div>
+    </div>
+
+    <div class="kbd" id="kbd" role="group" aria-label="Цифровая клавиатура">
+      <div class="keys">
+        <div class="key" data-key="1">1</div>
+        <div class="key" data-key="2">2</div>
+        <div class="key" data-key="3">3</div>
+        <div class="key" data-key="4">4</div>
+        <div class="key" data-key="5">5</div>
+        <div class="key" data-key="6">6</div>
+        <div class="key" data-key="7">7</div>
+        <div class="key" data-key="8">8</div>
+        <div class="key" data-key="9">9</div>
+        <div class="key wide" id="scanBtn">Сканировать</div>
+        <div class="key" data-key="0">0</div>
+        <div class="key" id="sendBtn">✉️</div>
+      </div>
+      <video id="video" playsinline></video>
+    </div>
+
+    <div class="footer">@buspaybot</div>
+  </div>
+
+  <script>
+    const MAX = 6
+    const cells = document.querySelectorAll('.cell')
+    let value = ''
+
+    function refresh(){
+      for(let i=0;i<MAX;i++){
+        cells[i].textContent = value[i] ? value[i] : ''
+      }
+    }
+
+    document.querySelectorAll('.key[data-key]').forEach(k=>{
+      k.addEventListener('click', ()=>{
+        if(value.length < MAX){
+          value += k.dataset.key
+          refresh()
         }
-        
-        function selectOption(element) {
-            if (!element.classList.contains('selected')) {
-                element.classList.add('selected');
-                selectedOptions++;
-            }
-            checkFormValidity();
+      })
+    })
+
+    // отправка (замените на реальную отправку в бота через Web App or API)
+    document.getElementById('sendBtn').addEventListener('click', ()=>{
+      if(value.length !== MAX){
+        alert('Введите 6-значный код')
+        return
+      }
+      // пример: window.Telegram.WebApp.sendData(value)
+      console.log('Отправка кода:', value)
+      alert('Код отправлен: ' + value)
+      value = ''
+      refresh()
+    })
+
+    // сканер QR (использует WebRTC + jsQR если подключите библиотеку)
+    const video = document.getElementById('video')
+    const scanBtn = document.getElementById('scanBtn')
+    let stream=null, scanning=false, scanAnim=null
+
+    scanBtn.addEventListener('click', async ()=>{
+      if(!scanning){
+        try{
+          stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+          video.srcObject = stream
+          await video.play()
+          video.style.display = 'block'
+          scanning = true
+          scanFrame()
+        }catch(e){
+          alert('Ошибка доступа к камере: ' + e.message)
         }
-        
-        function checkFormValidity() {
-            const code = document.getElementById('codeInput').value;
-            const buyButton = document.getElementById('buyButton');
-            
-            if (code.length === 6 && selectedOptions === 2 && selectedBus !== null) {
-                buyButton.disabled = false;
-            } else {
-                buyButton.disabled = true;
-            }
-        }
-        
-        function processPurchase() {
-            const code = document.getElementById('codeInput').value;
-            
-            // Отправляем данные в бота
-            const data = {
-                code: code,
-                bus_number: selectedBus,
-                route: "90 Ак. биатлона-Верхн. Базаиха",
-                action: 'buy_ticket',
-                timestamp: new Date().toISOString()
-            };
-            
-            tg.sendData(JSON.stringify(data));
-            tg.close();
-        }
-        
-        // Проверка валидности формы при вводе кода
-        document.getElementById('codeInput').addEventListener('input', function(e) {
-            // Разрешаем только цифры
-            this.value = this.value.replace(/\D/g, '');
-            checkFormValidity();
-        });
-        
-        // Обработка нажатия Enter
-        document.getElementById('codeInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkFormValidity();
-            }
-        });
-    </script>
+      }else{
+        stopScan()
+      }
+    })
+
+    function stopScan(){
+      if(stream){stream.getTracks().forEach(t=>t.stop()); stream=null}
+      video.pause(); video.style.display='none'; scanning=false
+      if(scanAnim) cancelAnimationFrame(scanAnim)
+    }
+
+    // простая заглушка сканирования: пытается прочитать числовые символы через canvas + встроенный jsQR не подключён
+    function scanFrame(){
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      ctx.drawImage(video,0,0,canvas.width,canvas.height)
+      // Здесь можно подключить jsQR или другую библиотеку для распознавания QR и получить текст
+      // Пример (если подключите jsQR): const code = jsQR(ctx.getImageData(0,0,canvas.width,canvas.height).data, canvas.width, canvas.height)
+      // if(code){ handleScanned(code.data) }
+      scanAnim = requestAnimationFrame(scanFrame)
+    }
+
+    function handleScanned(text){
+      // если текст содержит 6 цифр подряд — заполняем
+      const m = text.match(/(\d{6})/)
+      if(m){
+        value = m[1]
+        refresh()
+        stopScan()
+        alert('Считан код: ' + value)
+      }else{
+        alert('QR не содержит 6-значного кода')
+      }
+    }
+
+    // поддержка удаления по долгому нажатию правой кнопки и клавиатуры
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Backspace'){
+        value = value.slice(0,-1)
+        refresh()
+      }
+      if(/\d/.test(e.key)){
+        if(value.length < MAX){ value += e.key; refresh() }
+      }
+    })
+  </script>
 </body>
 </html>
+
+
