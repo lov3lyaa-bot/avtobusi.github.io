@@ -6,40 +6,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Городской Транспорт</title>
 <style>
-  /* Цвета близкие к фото */
-  :root{
-    --bg:#0f1b23;
-    --panel:#0f222a;
-    --box:#132328;
-    --muted:#9fb0bb;
-    --accent:#e6eef2;
-    --key-bg:#ffffff;
-    --key-border:#d6d9dd;
-  }
+  :root{--bg:#0f1b23;--accent:#e6eef2;--muted:#9fb0bb;--key-bg:#fff;--key-border:#d6d9dd;--pay:#2ea44f}
   html,body{height:100%;margin:0;font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--accent)}
   .wrap{max-width:360px;margin:0 auto;padding:12px 14px;box-sizing:border-box}
   .topbar{height:52px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,0.03);font-weight:600}
-  .title{padding-left:6px}
   .content{padding-top:18px}
   .cells{display:flex;gap:10px;justify-content:center;margin-bottom:18px}
-  .cell{
-    width:44px;height:48px;border-radius:6px;background:transparent;border:2px solid rgba(255,255,255,0.04);
-    box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent)
-  }
+  .cell{width:44px;height:48px;border-radius:6px;background:transparent;border:2px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent)}
   .hint{display:flex;align-items:center;gap:10px;padding:6px 8px;color:var(--muted);font-weight:600;margin-bottom:12px}
-  .hint svg{width:18px;height:18px;opacity:0.9}
   .kbd{background:transparent;border-radius:6px;padding:6px}
   .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .key{
-    height:64px;border-radius:6px;background:var(--key-bg);display:flex;align-items:center;justify-content:center;
-    font-size:22px;color:#111;border:1px solid var(--key-border);cursor:pointer;user-select:none;
-  }
+  .key{height:64px;border-radius:6px;background:var(--key-bg);display:flex;align-items:center;justify-content:center;font-size:22px;color:#111;border:1px solid var(--key-border);cursor:pointer;user-select:none;}
   .key.smalltext{font-size:12px;padding:6px}
-  .key.action{background:linear-gradient(#fff,#f2f2f2)}
+  .actionRow{margin-top:12px;display:flex;gap:10px;align-items:center;justify-content:center}
+  .payBtn{
+    display:none; /* скрыта по-умолчанию */
+    width:100%;padding:12px;border-radius:8px;background:var(--pay);color:#fff;font-weight:700;border:0;cursor:pointer;font-size:16px;
+  }
+  .payBtn.disabled{opacity:0.6;cursor:not-allowed}
   .row-bottom{margin-top:12px;text-align:center;color:var(--muted);font-size:12px}
-  .send-icon{display:flex;align-items:center;justify-content:center}
-  /* responsive */
-  @media (max-width:420px){ .wrap{padding:10px} .cell{width:40px;height:44px} .key{height:60px} }
+  @media (max-width:420px){ .cell{width:40px;height:44px} .key{height:60px} }
 </style>
 </head>
 <body>
@@ -47,7 +33,7 @@
     <div class="topbar"><div class="title">Городской Транспорт</div></div>
 
     <div class="content">
-      <div class="cells" id="cells" aria-hidden="false">
+      <div class="cells" id="cells">
         <div class="cell" data-i="0"></div>
         <div class="cell" data-i="1"></div>
         <div class="cell" data-i="2"></div>
@@ -56,8 +42,8 @@
         <div class="cell" data-i="5"></div>
       </div>
 
-      <div class=&quot;hint" aria-hidden="false">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" fill="#98A6B2"/></svg>
+      <div class="hint">
+        <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px"><rect x="3" y="3" width="18" height="18" rx="2" fill="#98A6B2"/></svg>
         <div>Введите код с наклейки</div>
       </div>
 
@@ -80,9 +66,13 @@
 
           <div class="key" data-key="0">0</div>
 
-          <div class="key action send-icon" id="delBtn">
+          <div class="key action" id="delBtn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 19c0 .6.4 1 1 1h10a1 1 0 0 0 1-1V8H6v11zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="#111"/></svg>
           </div>
+        </div>
+
+        <div class="actionRow">
+          <button class="payBtn" id="payBtn" aria-hidden="true">Оплатить</button>
         </div>
       </div>
 
@@ -91,22 +81,33 @@
   </div>
 
 <script>
-  // Логика ввода: 6 ячеек, ввод цифр, удаление последней, очистка по длинному клику
   const cells = document.querySelectorAll('.cell')
+  const payBtn = document.getElementById('payBtn')
   let value = ''
   const MAX = 6
+
   function refresh(){
     for(let i=0;i<MAX;i++){
       cells[i].textContent = value[i]||''
     }
+    // показать кнопку оплаты, когда введено ровно MAX цифр
+    if(value.length === MAX){
+      payBtn.style.display = 'block'
+      payBtn.removeAttribute('aria-hidden')
+    } else {
+      payBtn.style.display = 'none'
+      payBtn.setAttribute('aria-hidden','true')
+    }
   }
+
   document.querySelectorAll('.key[data-key]').forEach(k=>{
     k.addEventListener('click', ()=>{ if(value.length<MAX){ value += k.dataset.key; refresh() } })
   })
+
   document.getElementById('delBtn').addEventListener('click', ()=>{
-    // если пусто — ничего, если есть — удаляем последнюю
     value = value.slice(0,-1); refresh()
   })
+
   // длинное нажатие для очистки
   let holdTimer = null
   const delBtn = document.getElementById('delBtn')
@@ -115,16 +116,26 @@
   delBtn.addEventListener('touchstart', ()=>{ holdTimer = setTimeout(()=>{ value=''; refresh() }, 700) }, {passive:true})
   delBtn.addEventListener('touchend', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null } }, {passive:true})
 
-  // кнопка сканирования — заглушка
   document.getElementById('scanBtn').addEventListener('click', ()=>{
     alert('Открыть сканер (реализация зависит от проекта).')
   })
 
-  // поддержка клавиатуры
+  // обработка оплаты
+  payBtn.addEventListener('click', ()=>{
+    if(value.length === MAX){
+      // Здесь можно сделать реальную отправку/переход к платежу
+      alert('Платёж инициирован для кода: ' + value)
+      // Для наглядности очищаем поле и прячем кнопку
+      value = ''
+      refresh()
+    }
+  })
+
+  // поддержка физической клавиатуры
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Backspace'){ value = value.slice(0,-1); refresh(); return }
     if(/^[0-9]$/.test(e.key)){ if(value.length<MAX){ value += e.key; refresh() } }
-    if(e.key === 'Enter'){ if(value.length===MAX){ alert('Отправлено: '+value); value=''; refresh() } }
+    if(e.key === 'Enter' && value.length===MAX){ payBtn.click() }
   })
 </script>
 </body>
