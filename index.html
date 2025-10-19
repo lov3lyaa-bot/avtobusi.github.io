@@ -1,144 +1,61 @@
-
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Городской Транспорт</title>
-<style>
-  :root{--bg:#0f1b23;--accent:#e6eef2;--muted:#9fb0bb;--key-bg:#fff;--key-border:#d6d9dd;--pay:#2ea44f}
-  html,body{height:100%;margin:0;font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--accent)}
-  .wrap{max-width:360px;margin:0 auto;padding:12px 14px;box-sizing:border-box}
-  .topbar{height:52px;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,0.03);font-weight:600}
-  .content{padding-top:18px}
-  .cells{display:flex;gap:10px;justify-content:center;margin-bottom:18px}
-  .cell{width:44px;height:48px;border-radius:6px;background:transparent;border:2px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent)}
-  .hint{display:flex;align-items:center;gap:10px;padding:6px 8px;color:var(--muted);font-weight:600;margin-bottom:12px}
-  .kbd{background:transparent;border-radius:6px;padding:6px}
-  .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .key{height:64px;border-radius:6px;background:var(--key-bg);display:flex;align-items:center;justify-content:center;font-size:22px;color:#111;border:1px solid var(--key-border);cursor:pointer;user-select:none;}
-  .key.smalltext{font-size:12px;padding:6px}
-  .actionRow{margin-top:12px;display:flex;gap:10px;align-items:center;justify-content:center}
-  .payBtn{
-    display:none; /* скрыта по-умолчанию */
-    width:100%;padding:12px;border-radius:8px;background:var(--pay);color:#fff;font-weight:700;border:0;cursor:pointer;font-size:16px;
-  }
-  .payBtn.disabled{opacity:0.6;cursor:not-allowed}
-  .row-bottom{margin-top:12px;text-align:center;color:var(--muted);font-size:12px}
-  @media (max-width:420px){ .cell{width:40px;height:44px} .key{height:60px} }
-</style>
+    <title>Death Timer</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: #1e1e1e;
+            color: white;
+        }
+        .timer {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap" role="application" aria-label="Городской Транспорт">
-    <div class="topbar"><div class="title">Городской Транспорт</div></div>
+    <h1>⏳ Ваш отсчет до смерти</h1>
+    <div id="timer" class="timer">Загрузка...</div>
+    <button onclick="generateNew()">🎲 Новая дата смерти</button>
 
-    <div class="content">
-      <div class="cells" id="cells">
-        <div class="cell" data-i="0"></div>
-        <div class="cell" data-i="1"></div>
-        <div class="cell" data-i="2"></div>
-        <div class="cell" data-i="3"></div>
-        <div class="cell" data-i="4"></div>
-        <div class="cell" data-i="5"></div>
-      </div>
+    <script>
+        let deathDate = null;
 
-      <div class="hint">
-        <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px"><rect x="3" y="3" width="18" height="18" rx="2" fill="#98A6B2"/></svg>
-        <div>Введите код с наклейки</div>
-      </div>
+        function updateTimer() {
+            if (!deathDate) return;
+            
+            const now = new Date();
+            const diff = deathDate - now;
+            
+            if (diff <= 0) {
+                document.getElementById('timer').innerHTML = "Время вышло!";
+                return;
+            }
+            
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('timer').innerHTML = 
+                `${years} лет ${days} дней ${hours} часов ${minutes} минут ${seconds} секунд`;
+        }
 
-      <div class="kbd" aria-label="Клавиатура">
-        <div class="keys" id="keys">
-          <div class="key" data-key="1">1</div>
-          <div class="key" data-key="2">2</div>
-          <div class="key" data-key="3">3</div>
-          <div class="key" data-key="4">4</div>
-          <div class="key" data-key="5">5</div>
-          <div class="key" data-key="6">6</div>
-          <div class="key" data-key="7">7</div>
-          <div class="key" data-key="8">8</div>
-          <div class="key" data-key="9">9</div>
+        function generateNew() {
+            Telegram.WebApp.sendData(JSON.stringify({action: "generate"}));
+        }
 
-          <div class="key action smalltext" id="scanBtn">
-            Сканировать
-            <div style="margin-left:6px;font-size:10px;opacity:0.7">▦▦</div>
-          </div>
-
-          <div class="key" data-key="0">0</div>
-
-          <div class="key action" id="delBtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 19c0 .6.4 1 1 1h10a1 1 0 0 0 1-1V8H6v11zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="#111"/></svg>
-          </div>
-        </div>
-
-        <div class="actionRow">
-          <button class="payBtn" id="payBtn" aria-hidden="true">Оплатить</button>
-        </div>
-      </div>
-
-      <div class="row-bottom">@buspaybot</div>
-    </div>
-  </div>
-
-<script>
-  const cells = document.querySelectorAll('.cell')
-  const payBtn = document.getElementById('payBtn')
-  let value = ''
-  const MAX = 6
-
-  function refresh(){
-    for(let i=0;i<MAX;i++){
-      cells[i].textContent = value[i]||''
-    }
-    // показать кнопку оплаты, когда введено ровно MAX цифр
-    if(value.length === MAX){
-      payBtn.style.display = 'block'
-      payBtn.removeAttribute('aria-hidden')
-    } else {
-      payBtn.style.display = 'none'
-      payBtn.setAttribute('aria-hidden','true')
-    }
-  }
-
-  document.querySelectorAll('.key[data-key]').forEach(k=>{
-    k.addEventListener('click', ()=>{ if(value.length<MAX){ value += k.dataset.key; refresh() } })
-  })
-
-  document.getElementById('delBtn').addEventListener('click', ()=>{
-    value = value.slice(0,-1); refresh()
-  })
-
-  // длинное нажатие для очистки
-  let holdTimer = null
-  const delBtn = document.getElementById('delBtn')
-  delBtn.addEventListener('mousedown', ()=>{ holdTimer = setTimeout(()=>{ value=''; refresh() }, 700) })
-  delBtn.addEventListener('mouseup', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null } })
-  delBtn.addEventListener('touchstart', ()=>{ holdTimer = setTimeout(()=>{ value=''; refresh() }, 700) }, {passive:true})
-  delBtn.addEventListener('touchend', ()=>{ if(holdTimer){ clearTimeout(holdTimer); holdTimer=null } }, {passive:true})
-
-  document.getElementById('scanBtn').addEventListener('click', ()=>{
-    alert('Открыть сканер (реализация зависит от проекта).')
-  })
-
-  // обработка оплаты
-  payBtn.addEventListener('click', ()=>{
-    if(value.length === MAX){
-      // Здесь можно сделать реальную отправку/переход к платежу
-      alert('Платёж инициирован для кода: ' + value)
-      // Для наглядности очищаем поле и прячем кнопку
-      value = ''
-      refresh()
-    }
-  })
-
-  // поддержка физической клавиатуры
-  document.addEventListener('keydown', (e)=>{
-    if(e.key === 'Backspace'){ value = value.slice(0,-1); refresh(); return }
-    if(/^[0-9]$/.test(e.key)){ if(value.length<MAX){ value += e.key; refresh() } }
-    if(e.key === 'Enter' && value.length===MAX){ payBtn.click() }
-  })
-</script>
+        window.onload = function() {
+            Telegram.WebApp.ready();
+            // Получаем существующую дату из БД через бота или генерируем новую
+            deathDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 50); // Примерная дата
+            setInterval(updateTimer, 1000);
+        };
+    </script>
 </body>
 </html>
-
-
