@@ -18,44 +18,7 @@
     </style>
 </head>
 <body>
-    <h1>⏳ Ваш отсчет до смерти</h1>
-    <div id="timer" class="timer">Загрузка...</div>
-    <button onclick="generateNew()">🎲 Новая дата смерти</button>
-
-    <script>
-        let deathDate = null;
-
-        function updateTimer() {
-            if (!deathDate) return;
-            
-            const now = new Date();
-            const diff = deathDate - now;
-            
-            if (diff <= 0) {
-                document.getElementById('timer').innerHTML = "Время вышло!";
-                return;
-            }
-            
-            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
-            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('timer').innerHTML = 
-                `${years} лет ${days} дней ${hours} часов ${minutes} минут ${seconds} секунд`;
-        }
-
-        function generateNew() {
-            Telegram.WebApp.sendData(JSON.stringify({action: "generate"}));
-        }
-
-        window.onload = function() {
-            Telegram.WebApp.ready();
-            // Получаем существующую дату из БД через бота или генерируем новую
-            deathDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 50); // Примерная дата
-            setInterval(updateTimer, 1000);
-        };
-    </script>
+    <h1>ты уже мертв </h1>
 </body>
 </html>
+
